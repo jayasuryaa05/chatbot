@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Emotional Chatbot</title>
+  <style>
+    body { font-family: 'Arial'; background: #fce4ec; color: #333; text-align: center; padding: 50px; }
+    #chatbox { width: 300px; margin: auto; background: white; padding: 15px; border-radius: 10px; box-shadow: 0 0 10px #aaa; }
+    .msg { margin: 10px 0; }
+    .user { text-align: right; color: #007bff; }
+    .bot { text-align: left; color: #e91e63; }
+  </style>
+</head>
+<body>
+  <h2>💬 BabeBot</h2>
+  <div id="chatbox"></div>
+  <input type="text" id="userInput" placeholder="Type a message..." onkeydown="if(event.key==='Enter') sendMsg()" />
+  <button onclick="sendMsg()">Send</button>
+
+  <script>
+    function sendMsg() {
+      let userText = document.getElementById("userInput").value;
+      let chatbox = document.getElementById("chatbox");
+
+      chatbox.innerHTML += "<div class='msg user'>" + userText + "</div>";
+      document.getElementById("userInput").value = "";
+
+      fetch("/get?msg=" + userText)
+        .then(response => response.text())
+        .then(botReply => {
+          chatbox.innerHTML += "<div class='msg bot'>" + botReply + "</div>";
+        });
+    }
+  </script>
+</body>
+</html>
