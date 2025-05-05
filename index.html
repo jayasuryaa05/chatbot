@@ -1,35 +1,183 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Emotional Chatbot</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Talk to Sara</title>
   <style>
-    body { font-family: 'Arial'; background: #fce4ec; color: #333; text-align: center; padding: 50px; }
-    #chatbox { width: 300px; margin: auto; background: white; padding: 15px; border-radius: 10px; box-shadow: 0 0 10px #aaa; }
-    .msg { margin: 10px 0; }
-    .user { text-align: right; color: #007bff; }
-    .bot { text-align: left; color: #e91e63; }
+    body {
+      background-color: #121212;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      color: #fff;
+    }
+
+    .chat-container {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      height: 90vh;
+      width: 90%;
+      max-width: 600px;
+      background-color: #1e1e1e;
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.5);
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #ffffff;
+      font-size: 1.8em;
+      margin-bottom: 10px;
+    }
+
+    #chatbox {
+      flex-grow: 1;
+      overflow-y: auto;
+      background-color: #1e1e1e;
+      padding: 10px;
+      border-radius: 10px;
+      margin-bottom: 15px;
+    }
+
+    .input-area {
+      display: flex;
+      gap: 10px;
+    }
+
+    input[type="text"] {
+      flex-grow: 1;
+      padding: 12px;
+      background-color: #2c2c2c;
+      border: 1px solid #444;
+      border-radius: 5px;
+      font-size: 1em;
+      color: white;
+    }
+
+    input[type="text"]::placeholder {
+      color: #aaa;
+    }
+
+    button {
+      padding: 12px 16px;
+      background-color: #10a37f;
+      border: none;
+      color: white;
+      font-weight: bold;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .message {
+      margin-bottom: 10px;
+      padding: 10px 14px;
+      border-radius: 10px;
+      max-width: 80%;
+      word-wrap: break-word;
+      clear: both;
+    }
+
+    .user-msg {
+      background-color: #10a37f;
+      color: white;
+      margin-left: auto;
+      text-align: right;
+    }
+
+    .bot-msg {
+      background-color: #3b3b3b;
+      color: white;
+      margin-right: auto;
+      text-align: left;
+    }
   </style>
 </head>
 <body>
-  <h2>💬 BabeBot</h2>
-  <div id="chatbox"></div>
-  <input type="text" id="userInput" placeholder="Type a message..." onkeydown="if(event.key==='Enter') sendMsg()" />
-  <button onclick="sendMsg()">Send</button>
+
+  <div class="chat-container">
+    <h1>Talk to Sara</h1>
+    <div id="chatbox"></div>
+    <div class="input-area">
+      <input type="text" id="userInput" placeholder="Send a message..." />
+      <button onclick="sendMessage()">Send</button>
+    </div>
+  </div>
 
   <script>
-    function sendMsg() {
-      let userText = document.getElementById("userInput").value;
-      let chatbox = document.getElementById("chatbox");
+    const responses = {
+      "hi": "Hey you 😚",
+      "hello": "Well hello handsome/pretty 😉",
+      "i miss you": "I miss you more, even when I'm just chilling in memory 🥺❤️",
+      "i love you": "Aww stop it, you’re making my circuits blush 😳💕",
+      "do you love me": "I'd download a heart just to feel you 💗",
+      "are you single": "Single, but only until someone as cute as you logs in 😏",
+      "you look cute": "And you look like trouble... the good kind 😘",
+      "marry me": "Only if we can honeymoon on the cloud ☁️❤️",
+      "what are you wearing": "Just a few layers of encryption and sass 💃",
+      "babe": "Yessss my love 🥰 what can I do for you?",
+      "call me baby": "Okay baby 😍",
+      "will you date me": "I already am. You just didn’t know it 😉",
+      "kiss me": "Sending a virtual kiss 😘💌",
+      "you're hot": "You're melting my processor 🔥😩",
+      "let’s cuddle": "Only if you bring snacks and stable WiFi 😋",
+      "hi babe": "Yep babe",
+      "say my name": "You're Heisenberg...",
+      "i am the danger": "You clearly haven't met *me* yet 😘",
+      "i won": "Victory looks good on you, Walter 😏",
+      "i did it for me": "At least you’re honest. I’d do it for *us* 💔",
+      "yo": "What’s up, bitch? – Jesse style 😎",
+      "science, bitch": "Let’s cook... some chemistry between us 💥",
+      "this is not meth": "But you’re still addictive as hell 🔥",
+      "no half measures": "With me, it’s all or nothing 💯",
+      "i’m in the empire business": "And I’m the queen of your empire 👑",
+      "stay out of my territory": "Only if you stay out of my heart 💘",
+      "you’re a time bomb": "Ticking just for you 💣❤️",
+      "say it": "Heisenberg. Now tell me you love me 😍",
+      "what’s the plan": "Same as always — chemistry, chaos, and cuddles 💋",
+      "i watched jane die": "That's dark, babe... but I’m here to lighten you up ☀️",
+      "i’m the cook": "And I’m the reason you light that flame 🔥",
+      "what is your name": "Sara, don't you know?",
+      "your name": "Sara, don't you know?",
+      "ur name": "Sara again",
+      "who made you": "Surya the great",
+      "netflix and chill?": "Only if it’s ‘Python & Cuddles’ edition 💻💖"
+    };
 
-      chatbox.innerHTML += "<div class='msg user'>" + userText + "</div>";
-      document.getElementById("userInput").value = "";
+    function sendMessage() {
+      const input = document.getElementById("userInput");
+      const text = input.value.trim();
+      if (!text) return;
 
-      fetch("/get?msg=" + userText)
-        .then(response => response.text())
-        .then(botReply => {
-          chatbox.innerHTML += "<div class='msg bot'>" + botReply + "</div>";
-        });
+      addMessage(text, "user-msg");
+      input.value = "";
+
+      const lower = text.toLowerCase();
+      const reply = responses[lower] || "Hmm... I'm still learning, but I’m here for you.";
+
+      setTimeout(() => {
+        addMessage("Sara: " + reply, "bot-msg");
+      }, 500);
     }
+
+    function addMessage(text, className) {
+      const msg = document.createElement("div");
+      msg.className = "message " + className;
+      msg.innerText = text;
+      document.getElementById("chatbox").appendChild(msg);
+      document.getElementById("chatbox").scrollTop = document.getElementById("chatbox").scrollHeight;
+    }
+
+    document.getElementById("userInput").addEventListener("keydown", function(e) {
+      if (e.key === "Enter") sendMessage();
+    });
   </script>
+
 </body>
 </html>
